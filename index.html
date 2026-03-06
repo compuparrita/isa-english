@@ -331,11 +331,15 @@
         }, 1000);
 
         window.openSet = () => {
-            const k = prompt("⚠️ PEGA AQUÍ TU API KEY DE GEMINI:", KEY);
-            const m = prompt("Modelo (ej: gemini-2.5-flash):", MODEL);
-            if (k !== null) { KEY = k.trim(); localStorage.setItem('gemini_api_key', KEY); }
-            if (m !== null) { MODEL = m.trim(); localStorage.setItem('gemini_model', MODEL); }
-            if (confirm("¿Quieres borrar todo el historial?")) {
+            const k = prompt("🔑 PEGA TU NUEVA CLAVE (AIza...):", KEY);
+            const m = prompt("Modelo (Dejar como está para mejor estabilidad):", MODEL);
+            if (k !== null && k.trim() !== "") {
+                KEY = k.trim();
+                localStorage.setItem('gemini_api_key', KEY);
+                alert("¡Configuración guardada! La app ya puede conectar con la IA de ella.");
+            }
+            if (m !== null && m.trim() !== "") { MODEL = m.trim(); localStorage.setItem('gemini_model', MODEL); }
+            if (confirm("¿Quieres limpiar el historial de chat?")) {
                 localStorage.removeItem('chat_history');
                 localStorage.removeItem('ui_messages');
             }
