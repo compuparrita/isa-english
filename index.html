@@ -315,8 +315,8 @@
     <script type="module">
         import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
-        // Configuración
-        let KEY = localStorage.getItem('gemini_api_key') || 'AIzaSyB-ysHTSLXBtVqpChGGoMp5obOSANv1wpc';
+        // Configuración (La Key ahora es privada y no se sube a GitHub)
+        let KEY = localStorage.getItem('gemini_api_key') || '';
         let MODEL = localStorage.getItem('gemini_model') || 'gemini-2.5-flash';
         let history = JSON.parse(localStorage.getItem('chat_history') || '[]');
         let uiMessages = JSON.parse(localStorage.getItem('ui_messages') || '[]');
@@ -331,16 +331,23 @@
         }, 1000);
 
         window.openSet = () => {
-            const k = prompt("Gemini Key:", KEY);
-            const m = prompt("Model:", MODEL);
-            if (k) { KEY = k.trim(); localStorage.setItem('gemini_api_key', KEY); }
-            if (m) { MODEL = m.trim(); localStorage.setItem('gemini_model', MODEL); }
+            const k = prompt("⚠️ PEGA AQUÍ TU API KEY DE GEMINI:", KEY);
+            const m = prompt("Modelo (ej: gemini-2.5-flash):", MODEL);
+            if (k !== null) { KEY = k.trim(); localStorage.setItem('gemini_api_key', KEY); }
+            if (m !== null) { MODEL = m.trim(); localStorage.setItem('gemini_model', MODEL); }
             if (confirm("¿Quieres borrar todo el historial?")) {
                 localStorage.removeItem('chat_history');
                 localStorage.removeItem('ui_messages');
             }
             location.reload();
         };
+
+        // Si no hay KEY al iniciar, abrir configuración automáticamente
+        if (!KEY) {
+            setTimeout(() => {
+                alert("¡Hola! Para empezar, necesitas configurar tu API Key privada. Pulsa el icono ⚙️ arriba a la derecha.");
+            }, 1000);
+        }
 
         // NAVEGACIÓN
         window.showView = (vId) => {
@@ -376,6 +383,11 @@
         window.send = async (forceText = null) => {
             const val = forceText || inp.value.trim();
             if (!val) return;
+
+            if (!KEY) {
+                appendMsg("❌ No has configurado tu API Key. Pulsa el icono ⚙️ arriba a la derecha para pegarla.", 'ai');
+                return;
+            }
 
             const chat = document.getElementById('chat-area');
             const uId = 'u-' + Date.now();
