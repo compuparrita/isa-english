@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Academy.PRO v2.0</title>
+    <!-- PWA Settings -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/190/190614.png">
+    <link rel="manifest" id="my-manifest">
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --primary: #a855f7;
+            --pink: #ec4899;
+            --cyan: #06b6d4;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-image: radial-gradient(circle at 100% 0%, #2e1065 0%, transparent 40%),
+                radial-gradient(circle at 0% 100%, #083344 0%, transparent 40%);
+        }
+
+        /* Status Bar REAL */
+        .status-bar {
+            padding: 8px 24px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        /* Views (Pantallas) */
+        .view {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            flex-direction: column;
+            padding: 10px 20px;
+        }
+
+        .view.active {
+            display: flex;
+        }
+
+        /* Dashboard (Home) */
+        .hero-card {
+            background: linear-gradient(135deg, #1e1b4b 0%, #000 100%);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .prog-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        /* Chat (Practice) */
+        #chat-area {
+            flex: 1;
+            padding: 10px 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #chat-area::-webkit-scrollbar {
+            display: none;
+        }
+
+        .msg {
+            padding: 14px 20px;
+            border-radius: 25px;
+            max-width: 85%;
+            font-size: 1rem;
+            line-height: 1.5;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+        }
+
+        .ai {
+            align-self: flex-start;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 5px;
+        }
+
+        .user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary), var(--pink));
+            border-bottom-right-radius: 5px;
+            box-shadow: 0 10px 20px rgba(168, 85, 247, 0.2);
+        }
+
+        .correction {
+            background: rgba(248, 113, 113, 0.1);
+            border-left: 3px solid #ef4444;
+            padding: 10px;
+            border-radius: 12px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Scanned Input */
+        .input-pill {
+            background: #18181b;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 5px 5px 5px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .input-scanning::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.2), transparent);
+            animation: scanAnim 1.5s infinite;
+        }
+
+        @keyframes scanAnim {
+            to {
+                left: 100%;
+            }
+        }
+
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 12px 0;
+            font-family: inherit;
+            font-size: 1.05rem;
+            outline: none;
+        }
+
+        /* Nav (Encogido y elegante) */
+        .nav-bar {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 12px 30px calc(24px + var(--safe-bottom));
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-link {
+            color: #64748b;
+            font-size: 0.75rem;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: 0.3s;
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+        }
+
+        .nav-link i {
+            font-size: 1.3rem;
+            margin-bottom: 2px;
+        }
+
+        .btn-main {
+            background: var(--primary);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(168, 85, 247, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            padding: 15px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="status-bar">
+        <span id="real-time">00:00</span>
+        <div style="display: flex; gap: 10px;">📶 🔋</div>
+    </div>
+
+    <!-- PANTALLA 1: HOME -->
+    <div id="view-home" class="view active">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1 style="margin:0; font-size: 1.8rem; font-weight: 800;">Academy.<span
+                    style="color:var(--primary)">PRO</span></h1>
+            <button onclick="openSet()" style="background:none; border:none; color:white; font-size:1.5rem;">⚙️</button>
+        </div>
+
+        <div class="hero-card">
+            <div style="display: flex; justify-content: space-between;">
+                <div>
+                    <h2 style="margin:0; font-size: 1.3rem;">Level A2 Challenge</h2>
+                    <p style="color:#94a3b8; margin: 5px 0 15px;">Today's mission: Daily Routine</p>
+                    <button class="btn-main" onclick="startChallenge()">START NOW</button>
+                </div>
+                <div class="prog-circle">45%</div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div style="color:var(--primary); font-size: 1.4rem; font-weight: bold;">124</div>
+                <div style="font-size: 0.7rem; color:#94a3b8;">WORDS TODAY</div>
+            </div>
+            <div class="stat-card">
+                <div style="color:var(--cyan); font-size: 1.4rem; font-weight: bold;">15m</div>
+                <div style="font-size: 0.7rem; color:#94a3b8;">TIME SPENT</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA 2: PRACTICE -->
+    <div id="view-practice" class="view">
+        <div id="chat-area">
+            <div class="msg ai">Ready for practice! Type anything or use a challenge button.</div>
+        </div>
+        <div style="padding: 10px 0;">
+            <div id="input-pill" class="input-pill">
+                <input type="text" id="userInput" placeholder="Escribe en inglés..." autocomplete="off">
+                <button onclick="send()"
+                    style="background:white; border:none; width:40px; height:40px; border-radius:50%; font-weight:bold; cursor:pointer;">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA 3: STATS (VISTA PRO) -->
+    <div id="view-stats" class="view">
+        <h2 style="font-weight: 800; font-size: 1.8rem;">Profile Overview</h2>
+        <div class="stat-card" style="margin-top: 20px; text-align: left;">
+            <p style="margin:0; color:#94a3b8;">Current Proficiency</p>
+            <h3 style="margin:5px 0;">Elementary (A2)</h3>
+            <div style="height:6px; background:#333; border-radius:3px; margin-top:10px;">
+                <div style="width:65%; height:100%; background:var(--primary); border-radius:3px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="nav-bar">
+        <a href="#" class="nav-link active" onclick="showView('home')"><i>🏠</i><span>Home</span></a>
+        <a href="#" class="nav-link" onclick="showView('practice')"><i>💬</i><span>Practice</span></a>
+        <a href="#" class="nav-link" onclick="showView('stats')"><i>👤</i><span>Profile</span></a>
+    </nav>
+
+    <script type="module">
+        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+        // Configuración
+        let KEY = localStorage.getItem('gemini_api_key') || 'AIzaSyB-ysHTSLXBtVqpChGGoMp5obOSANv1wpc';
+        let MODEL = localStorage.getItem('gemini_model') || 'gemini-2.5-flash';
+        let history = JSON.parse(localStorage.getItem('chat_history') || '[]');
+        let uiMessages = JSON.parse(localStorage.getItem('ui_messages') || '[]');
+        let streak = parseInt(localStorage.getItem('user_streak') || '0');
+        let lastDate = localStorage.getItem('last_practice_date');
+        let scanTimer = null;
+
+        // RELOJ REAL
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('real-time').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }, 1000);
+
+        window.openSet = () => {
+            const k = prompt("Gemini Key:", KEY);
+            const m = prompt("Model:", MODEL);
+            if (k) { KEY = k.trim(); localStorage.setItem('gemini_api_key', KEY); }
+            if (m) { MODEL = m.trim(); localStorage.setItem('gemini_model', MODEL); }
+            if (confirm("¿Quieres borrar todo el historial?")) {
+                localStorage.removeItem('chat_history');
+                localStorage.removeItem('ui_messages');
+            }
+            location.reload();
+        };
+
+        // NAVEGACIÓN
+        window.showView = (vId) => {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById('view-' + vId).classList.add('active');
+
+            // Buscar el link correcto y activarlo
+            const activeLink = Array.from(document.querySelectorAll('.nav-link')).find(l => l.getAttribute('onclick').includes(`'${vId}'`));
+            if (activeLink) activeLink.classList.add('active');
+
+            localStorage.setItem('current_view', vId);
+            if (vId === 'practice') setTimeout(() => document.getElementById('userInput').focus(), 100);
+        };
+
+        window.startChallenge = () => { showView('practice'); window.send("Ponme un desafío de traducción: Dime una frase en ESPAÑOL y yo la traduzco."); };
+
+        // DETECTOR 2 SEGUNDOS
+        const inp = document.getElementById('userInput');
+        const pill = document.getElementById('input-pill');
+
+        inp.addEventListener('input', () => {
+            pill.classList.remove('input-scanning');
+            clearTimeout(scanTimer);
+            if (inp.value.length > 5) {
+                scanTimer = setTimeout(() => {
+                    pill.classList.add('input-scanning');
+                    // Efecto de audio sutil o vibración aquí si fuera posible
+                }, 2000);
+            }
+        });
+
+        window.send = async (forceText = null) => {
+            const val = forceText || inp.value.trim();
+            if (!val) return;
+
+            const chat = document.getElementById('chat-area');
+            const uId = 'u-' + Date.now();
+            appendMsg(val, 'user', uId);
+            inp.value = "";
+            pill.classList.remove('input-scanning');
+            chat.scrollTop = chat.scrollHeight;
+
+            try {
+                const genAI = new GoogleGenerativeAI(KEY);
+                const model = genAI.getGenerativeModel({ model: MODEL }, { apiVersion: 'v1' });
+
+                const rules = "Act as an expert English tutor level A2. For mistakes, use [ERROR] followed by [FIX: Correct Phrase]. Always motivate in English.";
+                const result = await model.generateContent({
+                    contents: [
+                        { role: "user", parts: [{ text: rules }] },
+                        { role: "model", parts: [{ text: "Understood! I'm your Academy PRO Tutor." }] },
+                        ...history,
+                        { role: "user", parts: [{ text: val }] }
+                    ]
+                });
+
+                const raw = result.response.text();
+                const userEl = document.getElementById(uId);
+
+                if (raw.includes("[ERROR]")) userEl.style.boxShadow = "0 0 20px rgba(239, 68, 68, 0.4)";
+                else userEl.style.boxShadow = "0 0 20px rgba(34, 197, 94, 0.4)";
+
+                let clean = raw.replace(/\[ERROR\]|\[FIX:.*?\]/g, '').trim();
+                let fix = "";
+                if (raw.includes("[FIX:")) {
+                    fix = raw.split("[FIX:")[1].split("]")[0];
+                }
+
+                appendMsg(clean, 'ai', null, fix);
+                history.push({ role: "user", parts: [{ text: val }] }, { role: "model", parts: [{ text: raw }] });
+                // Limitar historial a últimos 20 para fluidez
+                if (history.length > 20) history = history.slice(-20);
+                localStorage.setItem('chat_history', JSON.stringify(history));
+            } catch (e) { appendMsg("Connection Error. Check Key.", 'ai'); }
+        };
+
+        function appendMsg(text, sender, id, fix, save = true) {
+            if (save) {
+                uiMessages.push({ text, sender, id, fix });
+                if (uiMessages.length > 50) uiMessages.shift();
+                localStorage.setItem('ui_messages', JSON.stringify(uiMessages));
+            }
+            const area = document.getElementById('chat-area');
+            const div = document.createElement('div');
+            div.className = `msg ${sender}`;
+            if (id) div.id = id;
+
+            // Formateo de Markdown para negritas y saltos de línea
+            let formattedText = text
+                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                .replace(/\n/g, '<br>');
+
+            let h = `<div>${formattedText}</div>`;
+            if (fix) h += `<div class="correction">💡 <b>Better way:</b><br>${fix.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</div>`;
+
+            if (sender == 'ai') {
+                const btnContainer = document.createElement('div');
+                btnContainer.style.display = "flex"; btnContainer.style.gap = "8px";
+
+                const btn = document.createElement('button');
+                btn.className = 'hear-btn';
+                btn.style.cssText = "background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.2); color:var(--cyan); cursor:pointer; font-size:0.8rem; margin-top:12px; display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:10px; font-weight:600;";
+                btn.innerHTML = "🔊 Listen";
+                btn.onclick = () => window.audio(text.replace(/\*\*|__/g, ''), btn);
+
+                const stopBtn = document.createElement('button');
+                stopBtn.style.cssText = "background:rgba(239,68,68,0.1); border:none; color:#ef4444; font-size:0.8rem; margin-top:12px; padding:6px 12px; border-radius:10px; cursor:pointer;";
+                stopBtn.innerHTML = "⏹ Stop";
+                stopBtn.onclick = () => window.stopAudio();
+
+                btnContainer.appendChild(btn); btnContainer.appendChild(stopBtn);
+                div.appendChild(btnContainer);
+            }
+
+            const contentDiv = document.createElement('div');
+            contentDiv.innerHTML = h;
+            div.prepend(contentDiv);
+
+            area.appendChild(div);
+            area.scrollTop = area.scrollHeight;
+        }
+
+        window.audio = (t, btn) => {
+            if (window.speechSynthesis.speaking) {
+                if (window.speechSynthesis.paused) {
+                    window.speechSynthesis.resume();
+                    btn.innerHTML = "⏸ Pause";
+                } else {
+                    window.speechSynthesis.pause();
+                    btn.innerHTML = "▶ Resume";
+                }
+                return;
+            }
+
+            const u = new SpeechSynthesisUtterance(t);
+            const voices = window.speechSynthesis.getVoices();
+            // Buscar voz nativa premium (Google US English o Apple Samantha)
+            const nativeVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Samantha') || (v.lang === 'en-US' && v.name.includes('Natural')));
+            if (nativeVoice) u.voice = nativeVoice;
+
+            u.lang = 'en-US'; u.rate = 0.9;
+            u.onstart = () => btn.innerHTML = "⏸ Pause";
+            u.onend = () => btn.innerHTML = "🔊 Listen";
+
+            window.speechSynthesis.speak(u);
+        };
+
+        window.stopAudio = () => {
+            window.speechSynthesis.cancel();
+            document.querySelectorAll('.hear-btn').forEach(b => b.innerHTML = "🔊 Listen");
+        };
+
+        inp.addEventListener('keypress', (ee) => { if (ee.key === 'Enter') window.send(); });
+
+        // CARGAR HISTORIAL AL INICIO
+        window.addEventListener('load', () => {
+            uiMessages.forEach(m => appendMsg(m.text, m.sender, m.id, m.fix, false));
+            document.getElementById('real-time').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            // Restaurar vista guardada
+            const lastView = localStorage.getItem('current_view') || 'home';
+            showView(lastView);
+        });
+        // LOGICA PWA (Instalable)
+        const myManifest = {
+            "name": "English Academy Pro", "short_name": "Academy.Pro", "start_url": ".", "display": "standalone",
+            "background_color": "#050505", "theme_color": "#a855f7",
+            "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/190/190614.png", "sizes": "512x512", "type": "image/png" }]
+        };
+        const mBlob = new Blob([JSON.stringify(myManifest)], { type: 'application/json' });
+        document.getElementById('my-manifest').setAttribute('href', URL.createObjectURL(mBlob));
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:application/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGYgPT4geyBmLnJlc3BvbmRXaXRoKGZldGNoKGYucmVxdWVzdCkpOyB9KTs=');
+        }
+    </script>
+</body>
+
+</html>
