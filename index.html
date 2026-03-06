@@ -416,11 +416,16 @@
                 if (history.length > 20) history = history.slice(-20);
                 localStorage.setItem('chat_history', JSON.stringify(history));
             } catch (e) {
-                console.error(e);
-                let msg = e.message || "Error de conexión";
-                if (msg.includes("403")) msg = "Acceso denegado: Revisa tu API Key y cuotas.";
-                if (msg.includes("404")) msg = "Modelo no disponible: Prueba con gemini-1.5-flash.";
-                appendMsg("⚠️ " + msg, 'ai');
+                console.error("DETALLE ERROR:", e);
+                let msg = e.message || "";
+                let finalMsg = "Error de conexión";
+
+                if (msg.includes("API key not valid")) finalMsg = "🔑 La API Key de ella NO es válida o está mal copiada.";
+                else if (msg.includes("403")) finalMsg = "🚫 Acceso denegado (403): Revisa permisos o región de la Key.";
+                else if (msg.includes("404")) finalMsg = "⚠️ Modelo no encontrado (404).";
+                else finalMsg = "🚀 " + (msg || "Error desconocido de red.");
+
+                appendMsg(finalMsg + ". Pulsa ⚙️ para corregirlo.", 'ai');
             }
         };
 
@@ -513,16 +518,16 @@
         });
         // LOGICA PWA (Instalable)
         const myManifest = {
-            "name": "English Academy Pro", "short_name": "Academy.Pro", "start_url": ".", "display": "standalone",
-            "background_color": "#050505", "theme_color": "#a855f7",
+            "name": "English Academy Pro",
+            "short_name": "Academy.Pro",
+            "start_url": window.location.origin + window.location.pathname,
+            "display": "standalone",
+            "background_color": "#050505",
+            "theme_color": "#a855f7",
             "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/190/190614.png", "sizes": "512x512", "type": "image/png" }]
         };
         const mBlob = new Blob([JSON.stringify(myManifest)], { type: 'application/json' });
         document.getElementById('my-manifest').setAttribute('href', URL.createObjectURL(mBlob));
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:application/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGYgPT4geyBmLnJlc3BvbmRXaXRoKGZldGNoKGYucmVxdWVzdCkpOyB9KTs=');
-        }
     </script>
 </body>
 
