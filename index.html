@@ -414,7 +414,10 @@
                 // Limitar historial a últimos 20 para fluidez
                 if (history.length > 20) history = history.slice(-20);
                 localStorage.setItem('chat_history', JSON.stringify(history));
-            } catch (e) { appendMsg("Connection Error. Check Key.", 'ai'); }
+            } catch (e) {
+                console.error(e);
+                appendMsg("Error: " + (e.message || "Connection failed") + ". Pulsa ⚙️ para revisar tu Key.", 'ai');
+            }
         };
 
         function appendMsg(text, sender, id, fix, save = true) {
