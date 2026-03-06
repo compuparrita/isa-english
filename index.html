@@ -7,6 +7,7 @@
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Academy.PRO v2.0</title>
     <!-- PWA Settings -->
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/190/190614.png">
@@ -416,7 +417,10 @@
                 localStorage.setItem('chat_history', JSON.stringify(history));
             } catch (e) {
                 console.error(e);
-                appendMsg("Error: " + (e.message || "Connection failed") + ". Pulsa ⚙️ para revisar tu Key.", 'ai');
+                let msg = e.message || "Error de conexión";
+                if (msg.includes("403")) msg = "Acceso denegado: Revisa tu API Key y cuotas.";
+                if (msg.includes("404")) msg = "Modelo no disponible: Prueba con gemini-1.5-flash.";
+                appendMsg("⚠️ " + msg, 'ai');
             }
         };
 
